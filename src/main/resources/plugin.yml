@@ -1,0 +1,12 @@
+name: TowerDefense
+version: '${version}'
+main: org.iwich.towerdefense.TowerDefense
+api-version: 1.12
+commands:
+  tdstart:
+    description: Начать игру
+  tdstop:
+    description: Остановить игру
+events:
+  PlayerInteractEvent: true
+  InventoryClickEvent: true

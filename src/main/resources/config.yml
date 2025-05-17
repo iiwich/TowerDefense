@@ -1,0 +1,72 @@
+# Настройки мобов
+mobs:
+  zombie:
+    speed: 0.15  # Уменьшенная скорость
+    reward: 5
+  skeleton:
+    speed: 0.25
+    reward: 10
+  chicken:
+    speed: 0.35
+    reward: 3
+
+# Настройки башен
+towers:
+  basic:
+    name: "Базовая башня"
+    damage: 1
+    attack_speed: 2.0
+    range: 3
+    cost: 10
+    material: "COBBLESTONE"
+  medium:
+    name: "Средняя башня"
+    damage: 2
+    attack_speed: 1.0
+    range: 2
+    cost: 20
+    material: "IRON_BLOCK"
+  advanced:
+    name: "Продвинутая башня"
+    damage: 5
+    attack_speed: 0.5
+    range: 1
+    cost: 40
+    material: "DIAMOND_BLOCK"
+  ice:
+    name: "Ледяная башня"
+    damage: 3
+    attack_speed: 1.5
+    range: 4
+    cost: 30
+    material: "PACKED_ICE"
+    effect: "SLOW"  # Новый параметр - эффект
+    effect_duration: 100  # Длительность эффекта в тиках (5 сек)
+  poison:
+    name: "Ядовитая башня"
+    damage: 2
+    attack_speed: 1.0
+    range: 4
+    cost: 35
+    material: "GREEN_TERRACOTTA"
+    effect: "POISON"
+    effect_duration: 100
+    poison_spread: true  # Распространение яда
+    poison_spread_radius: 3.0
+    poison_spread_duration: 80
+
+# Путь мобов
+path:
+  start: "973,151,989"
+  end: "979,151,1002"
+  points:
+    - "973,151,1002"
+    - "976,151,1002"
+    - "976,151,989"
+    - "979,151,989"
+    - "979,151,1002"
+
+# Настройки игры
+game:
+  start_money: 50
+  start_lives: 10
