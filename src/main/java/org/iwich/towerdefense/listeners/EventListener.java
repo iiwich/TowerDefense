@@ -9,6 +9,8 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.iwich.towerdefense.models.PlayerData;
+import org.iwich.towerdefense.models.TowerType;
 
 public class EventListener implements Listener {
     private final GameManager gameManager;

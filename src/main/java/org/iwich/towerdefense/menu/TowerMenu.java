@@ -6,6 +6,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.iwich.towerdefense.managers.GameManager;
+import org.iwich.towerdefense.models.TowerType;
 
 import java.util.Arrays;
 

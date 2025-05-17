@@ -4,6 +4,8 @@ import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.util.Vector;
+import org.iwich.towerdefense.models.MobType;
+
 import java.util.List;
 import java.util.UUID;
 

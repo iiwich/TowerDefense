@@ -1,9 +1,8 @@
-package org.iwich.towerdefense;
+package org.iwich.towerdefense.models;
 
 import org.bukkit.Material;
-import org.bukkit.potion.PotionEffectType;
 
-public class TowerType {
+public class TowerData {
     private final String name;
     private final int damage;
     private final double attackSpeed;
@@ -16,7 +15,7 @@ public class TowerType {
     private final double poisonSpreadRadius;
     private final int poisonSpreadDuration;
 
-    public TowerType(String name, int damage, double attackSpeed, int range,
+    public TowerData(String name, int damage, double attackSpeed, int range,
                      int cost, Material material, String effect, int effectDuration,
                      boolean poisonSpread, double poisonSpreadRadius, int poisonSpreadDuration) {
         this.name = name;

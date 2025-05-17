@@ -5,6 +5,9 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
+import org.iwich.towerdefense.models.MobType;
+import org.iwich.towerdefense.models.TowerType;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
