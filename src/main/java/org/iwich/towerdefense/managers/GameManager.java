@@ -1,4 +1,4 @@
-package org.iwich.towerdefense;
+package org.iwich.towerdefense.managers;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -8,8 +8,11 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
+import org.iwich.towerdefense.data.MobData;
+import org.iwich.towerdefense.data.PlayerData;
+import org.iwich.towerdefense.data.TowerData;
+import org.iwich.towerdefense.effects.PoisonEffect;
 import org.iwich.towerdefense.models.*;
-import org.iwich.towerdefense.tasks.GameTickTask;
 
 import java.util.*;
 
@@ -25,8 +28,8 @@ public class GameManager {
     private List<Vector> path;
     private Vector startPoint;
     private Vector endPoint;
-    private Map<String, MobType> mobTypes;
-    private List<TowerType> towerTypes;
+    private Map<String, MobData> mobTypes;
+    private List<TowerData> towerTypes;
 
     private BukkitTask mobSpawnTask;
     private BukkitTask gameTickTask;
@@ -105,11 +108,11 @@ public class GameManager {
         return players.get(uuid);
     }
 
-    public List<TowerType> getTowerTypes() {
+    public List<TowerData> getTowerTypes() {
         return towerTypes;
     }
 
-    public boolean placeTower(Player player, TowerType towerType, Location location) {
+    public boolean placeTower(Player player, TowerData towerType, Location location) {
         // Проверка данных игрока
         PlayerData playerData = players.get(player.getUniqueId());
         if (playerData == null) {
@@ -231,6 +234,64 @@ public class GameManager {
                 Player player = Bukkit.getPlayer(uuid);
                 if (player != null && player.isOnline()) {
                     player.sendMessage("§bВолна §e" + wave + "§b началась!");
+                }
+            }
+        }
+    }
+
+    private class GameTickTask extends BukkitRunnable {
+        @Override
+        public void run() {
+            if (!gameActive) {
+                this.cancel();
+                return;
+            }
+
+            // Создаем копию списка для безопасного перебора
+            List<Mob> mobsToProcess = new ArrayList<>(activeMobs);
+            List<Mob> deadMobs = new ArrayList<>();
+            List<Mob> reachedEndMobs = new ArrayList<>();
+
+            // Обработка мобов
+            for (Mob mob : mobsToProcess) {
+                try {
+                    mob.update();
+
+                    if (!mob.isAlive()) {
+                        deadMobs.add(mob);
+                    } else if (mob.hasReachedEnd()) {
+                        reachedEndMobs.add(mob);
+                    }
+                } catch (Exception e) {
+                    plugin.getLogger().warning("Ошибка при обновлении моба: " + e.getMessage());
+                    deadMobs.add(mob); // Удаляем проблемного моба
+                }
+            }
+
+            // Удаляем мертвых мобов
+            for (Mob mob : deadMobs) {
+                mobKilled(mob);
+                activeMobs.remove(mob);
+                if (mob.getEntity() != null) {
+                    mob.getEntity().remove();
+                }
+            }
+
+            // Обработка мобов, дошедших до конца
+            for (Mob mob : reachedEndMobs) {
+                mobReachedEnd(mob);
+                activeMobs.remove(mob);
+                if (mob.getEntity() != null) {
+                    mob.getEntity().remove();
+                }
+            }
+
+            // Обновление башен
+            for (Tower tower : towers) {
+                try {
+                    tower.update(activeMobs); // Передаем актуальный список мобов
+                } catch (Exception e) {
+                    plugin.getLogger().warning("Ошибка при обновлении башни: " + e.getMessage());
                 }
             }
         }

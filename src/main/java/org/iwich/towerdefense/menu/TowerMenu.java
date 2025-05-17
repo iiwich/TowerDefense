@@ -1,4 +1,4 @@
-package org.iwich.towerdefense;
+package org.iwich.towerdefense.menu;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -7,7 +7,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.iwich.towerdefense.managers.GameManager;
-import org.iwich.towerdefense.models.TowerType;
+import org.iwich.towerdefense.data.TowerData;
 
 import java.util.Arrays;
 
@@ -25,7 +25,7 @@ public class TowerMenu {
 
             // Заполняем меню
             for (int i = 0; i < Math.min(9, gameManager.getTowerTypes().size()); i++) {
-                TowerType towerType = gameManager.getTowerTypes().get(i);
+                TowerData towerType = gameManager.getTowerTypes().get(i);
                 inv.setItem(i, createTowerItem(towerType));
             }
 
@@ -36,7 +36,7 @@ public class TowerMenu {
         }
     }
 
-    private ItemStack createTowerItem(TowerType towerType) {
+    private ItemStack createTowerItem(TowerData towerType) {
         // Создание предмета
         Material material = towerType.getMaterial() != null ?
                 towerType.getMaterial() : Material.STONE;

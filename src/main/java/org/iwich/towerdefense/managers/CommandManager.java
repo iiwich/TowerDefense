@@ -1,4 +1,4 @@
-package org.iwich.towerdefense;
+package org.iwich.towerdefense.managers;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

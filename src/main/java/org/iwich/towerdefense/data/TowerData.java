@@ -1,4 +1,4 @@
-package org.iwich.towerdefense.models;
+package org.iwich.towerdefense.data;
 
 import org.bukkit.Material;
 

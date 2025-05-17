@@ -1,4 +1,4 @@
-package org.iwich.towerdefense;
+package org.iwich.towerdefense.models;
 
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -8,15 +8,17 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
+import org.iwich.towerdefense.data.TowerData;
+
 import java.util.List;
 
 public class Tower {
-    private final TowerType towerType;
+    private final TowerData towerType;
     private final Location location;
     private long lastAttackTime;
     private final JavaPlugin plugin;
 
-    public Tower(TowerType towerType, Location location, JavaPlugin plugin) {
+    public Tower(TowerData towerType, Location location, JavaPlugin plugin) {
         this.towerType = towerType;
         this.location = location;
         this.plugin = plugin;
@@ -143,6 +145,6 @@ public class Tower {
         location.getBlock().setType(Material.AIR);
     }
 
-    public TowerType getTowerType() { return towerType; }
+    public TowerData getTowerType() { return towerType; }
     public Location getLocation() { return location; }
 }

@@ -1,4 +1,4 @@
-package org.iwich.towerdefense;
+package org.iwich.towerdefense.listeners;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -9,8 +9,10 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
-import org.iwich.towerdefense.models.PlayerData;
-import org.iwich.towerdefense.models.TowerType;
+import org.iwich.towerdefense.menu.TowerMenu;
+import org.iwich.towerdefense.managers.GameManager;
+import org.iwich.towerdefense.data.PlayerData;
+import org.iwich.towerdefense.data.TowerData;
 
 public class EventListener implements Listener {
     private final GameManager gameManager;
@@ -41,7 +43,7 @@ public class EventListener implements Listener {
             PlayerData playerData = gameManager.getPlayerData(player.getUniqueId());
             if (playerData == null) return;
 
-            TowerType selectedTower = playerData.getSelectedTower();
+            TowerData selectedTower = playerData.getSelectedTower();
             if (selectedTower != null) {
                 boolean success = gameManager.placeTower(player, selectedTower, clickedBlock.getLocation().add(0, 1, 0));
                 if (success) {
@@ -68,7 +70,7 @@ public class EventListener implements Listener {
 
         int slot = event.getRawSlot();
         if (slot >= 0 && slot < gameManager.getTowerTypes().size()) {
-            TowerType selected = gameManager.getTowerTypes().get(slot);
+            TowerData selected = gameManager.getTowerTypes().get(slot);
             playerData.setSelectedTower(selected);
             player.sendMessage("§aВыбрана башня: §e" + selected.getName());
             player.closeInventory();

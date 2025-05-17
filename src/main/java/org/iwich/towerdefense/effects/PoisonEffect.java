@@ -1,4 +1,4 @@
-package org.iwich.towerdefense;
+package org.iwich.towerdefense.effects;
 
 import org.bukkit.Particle;
 import org.bukkit.entity.LivingEntity;

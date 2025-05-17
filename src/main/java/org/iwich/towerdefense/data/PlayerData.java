@@ -1,4 +1,4 @@
-package org.iwich.towerdefense.models;
+package org.iwich.towerdefense.data;
 
 public class PlayerData {
     private int money;

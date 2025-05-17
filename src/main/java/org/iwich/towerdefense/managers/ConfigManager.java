@@ -1,12 +1,12 @@
-package org.iwich.towerdefense;
+package org.iwich.towerdefense.managers;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
-import org.iwich.towerdefense.models.MobType;
-import org.iwich.towerdefense.models.TowerType;
+import org.iwich.towerdefense.data.MobData;
+import org.iwich.towerdefense.data.TowerData;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,10 +26,10 @@ public class ConfigManager {
         config = plugin.getConfig();
     }
 
-    public Map<String, MobType> getMobTypes() {
-        Map<String, MobType> mobTypes = new HashMap<>();
+    public Map<String, MobData> getMobTypes() {
+        Map<String, MobData> mobTypes = new HashMap<>();
 
-        mobTypes.put("zombie", new MobType(
+        mobTypes.put("zombie", new MobData(
                 "Zombie",
                 EntityType.ZOMBIE,
                 5,
@@ -37,7 +37,7 @@ public class ConfigManager {
                 config.getInt("mobs.zombie.reward", 5)
         ));
 
-        mobTypes.put("skeleton", new MobType(
+        mobTypes.put("skeleton", new MobData(
                 "Skeleton",
                 EntityType.SKELETON,
                 10,
@@ -45,7 +45,7 @@ public class ConfigManager {
                 config.getInt("mobs.skeleton.reward", 10)
         ));
 
-        mobTypes.put("chicken", new MobType(
+        mobTypes.put("chicken", new MobData(
                 "Chicken",
                 EntityType.CHICKEN,
                 2,
@@ -56,13 +56,13 @@ public class ConfigManager {
         return mobTypes;
     }
 
-    public List<TowerType> getTowerTypes() {
-        List<TowerType> towerTypes = new ArrayList<>();
+    public List<TowerData> getTowerTypes() {
+        List<TowerData> towerTypes = new ArrayList<>();
 
         for (String key : config.getConfigurationSection("towers").getKeys(false)) {
             String path = "towers." + key;
 
-            towerTypes.add(new TowerType(
+            towerTypes.add(new TowerData(
                     config.getString(path + ".name"),
                     config.getInt(path + ".damage"),
                     config.getDouble(path + ".attack_speed"),

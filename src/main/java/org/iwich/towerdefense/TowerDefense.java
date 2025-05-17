@@ -1,6 +1,10 @@
 package org.iwich.towerdefense;
 
 import org.bukkit.plugin.java.JavaPlugin;
+import org.iwich.towerdefense.listeners.EventListener;
+import org.iwich.towerdefense.managers.CommandManager;
+import org.iwich.towerdefense.managers.ConfigManager;
+import org.iwich.towerdefense.managers.GameManager;
 
 public class TowerDefense extends JavaPlugin {
     private GameManager gameManager;

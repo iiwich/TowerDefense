@@ -1,23 +1,23 @@
-package org.iwich.towerdefense;
+package org.iwich.towerdefense.models;
 
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.util.Vector;
-import org.iwich.towerdefense.models.MobType;
+import org.iwich.towerdefense.data.MobData;
 
 import java.util.List;
 import java.util.UUID;
 
 public class Mob {
-    private final MobType mobType;
+    private final MobData mobType;
     private final UUID targetPlayer;
     private LivingEntity entity;
     private int currentHealth;
     private List<Vector> path;
     private int currentPathIndex = 0;
 
-    public Mob(MobType mobType, UUID targetPlayer, Location spawnLocation, List<Vector> path) {
+    public Mob(MobData mobType, UUID targetPlayer, Location spawnLocation, List<Vector> path) {
         this.mobType = mobType;
         this.targetPlayer = targetPlayer;
         this.path = path;
@@ -90,7 +90,7 @@ public class Mob {
         }
     }
 
-    public MobType getMobType() { return mobType; }
+    public MobData getMobType() { return mobType; }
     public UUID getTargetPlayer() { return targetPlayer; }
     public LivingEntity getEntity() { return entity; }
     public boolean isAlive() { return currentHealth > 0; }
