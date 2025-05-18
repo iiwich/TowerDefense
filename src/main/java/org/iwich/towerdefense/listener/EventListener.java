@@ -1,4 +1,4 @@
-package org.iwich.towerdefense.listeners;
+package org.iwich.towerdefense.listener;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -10,9 +10,9 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.iwich.towerdefense.menu.TowerMenu;
-import org.iwich.towerdefense.managers.GameManager;
-import org.iwich.towerdefense.data.PlayerData;
+import org.iwich.towerdefense.manager.GameManager;
 import org.iwich.towerdefense.data.TowerData;
+import org.iwich.towerdefense.model.PlayerData;
 
 public class EventListener implements Listener {
     private final GameManager gameManager;
@@ -66,7 +66,7 @@ public class EventListener implements Listener {
         if (playerData == null) return;
 
         ItemStack clicked = event.getCurrentItem();
-        if (clicked == null || clicked.getType() == Material.AIR) return;
+        if (clicked ==   null || clicked.getType() == Material.AIR) return;
 
         int slot = event.getRawSlot();
         if (slot >= 0 && slot < gameManager.getTowerTypes().size()) {

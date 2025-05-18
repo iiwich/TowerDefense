@@ -1,10 +1,12 @@
 package org.iwich.towerdefense.data;
 
+import lombok.Getter;
 import org.bukkit.entity.EntityType;
 
+@Getter
 public class MobData {
-    private final String name;
     private final EntityType entityType;
+    private final String name;
     private final int health;
     private final float speed;
     private final int reward;
@@ -16,10 +18,4 @@ public class MobData {
         this.speed = speed;
         this.reward = reward;
     }
-
-    // Геттеры
-    public String getName() { return name; }
-    public int getHealth() { return health; }
-    public float getSpeed() { return speed; }
-    public int getReward() { return reward; }
 }

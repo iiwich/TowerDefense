@@ -1,18 +1,30 @@
 package org.iwich.towerdefense.data;
 
+import lombok.Getter;
 import org.bukkit.Material;
 
+
 public class TowerData {
+    @Getter
     private final String name;
+    @Getter
     private final int damage;
+    @Getter
     private final double attackSpeed;
+    @Getter
     private final int range;
+    @Getter
     private final int cost;
+    @Getter
     private final Material material;
+    @Getter
     private final String effect;
+    @Getter
     private final int effectDuration;
     private final boolean poisonSpread;
+    @Getter
     private final double poisonSpreadRadius;
+    @Getter
     private final int poisonSpreadDuration;
 
     public TowerData(String name, int damage, double attackSpeed, int range,
@@ -30,17 +42,5 @@ public class TowerData {
         this.poisonSpreadRadius = poisonSpreadRadius;
         this.poisonSpreadDuration = poisonSpreadDuration;
     }
-
-    // Геттеры
-    public String getName() { return name; }
-    public int getDamage() { return damage; }
-    public double getAttackSpeed() { return attackSpeed; }
-    public int getRange() { return range; }
-    public int getCost() { return cost; }
-    public Material getMaterial() { return material; }
-    public String getEffect() { return effect; }
-    public int getEffectDuration() { return effectDuration; }
     public boolean hasPoisonSpread() { return poisonSpread; }
-    public double getPoisonSpreadRadius() { return poisonSpreadRadius; }
-    public int getPoisonSpreadDuration() { return poisonSpreadDuration; }
 }

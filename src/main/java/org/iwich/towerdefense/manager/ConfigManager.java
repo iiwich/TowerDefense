@@ -1,6 +1,7 @@
-package org.iwich.towerdefense.managers;
+package org.iwich.towerdefense.manager;
 
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -28,32 +29,45 @@ public class ConfigManager {
 
     public Map<String, MobData> getMobTypes() {
         Map<String, MobData> mobTypes = new HashMap<>();
+        ConfigurationSection mobsSection = config.getConfigurationSection("mobs");
 
-        mobTypes.put("zombie", new MobData(
-                "Zombie",
-                EntityType.ZOMBIE,
-                5,
-                0.15f,  // Было 0.3f (уменьшили скорость в 2 раза)
-                config.getInt("mobs.zombie.reward", 5)
-        ));
+        if (mobsSection == null) {
+            mobsSection = config.createSection("mobs");
 
-        mobTypes.put("skeleton", new MobData(
-                "Skeleton",
-                EntityType.SKELETON,
-                10,
-                0.25f,  // Было 0.5f
-                config.getInt("mobs.skeleton.reward", 10)
-        ));
+            addDefaultMob(mobsSection, "zombie", "Zombie", EntityType.ZOMBIE, 5, 0.15f, 5);
+            addDefaultMob(mobsSection, "skeleton", "Skeleton", EntityType.SKELETON, 10, 0.25f, 10);
+            addDefaultMob(mobsSection, "chicken", "Chicken", EntityType.CHICKEN, 2, 0.35f, 3);
 
-        mobTypes.put("chicken", new MobData(
-                "Chicken",
-                EntityType.CHICKEN,
-                2,
-                0.35f,  // Было 0.7f
-                config.getInt("mobs.chicken.reward", 3)
-        ));
+            // Сохраняем конфиг
+            plugin.saveConfig();
+        }
+
+        // Загружаем мобов из конфига
+        for (String mobKey : mobsSection.getKeys(false)) {
+            ConfigurationSection mobSection = mobsSection.getConfigurationSection(mobKey);
+            if (mobSection != null) {
+                EntityType type = EntityType.valueOf(mobSection.getString("type").toUpperCase());
+                mobTypes.put(mobKey, new MobData(
+                        mobSection.getString("name", mobKey),
+                        type,
+                        mobSection.getInt("health", 10),
+                        (float) mobSection.getDouble("speed", 0.2),
+                        mobSection.getInt("reward", 5)
+                ));
+            }
+        }
 
         return mobTypes;
+    }
+
+    private void addDefaultMob(ConfigurationSection section, String key, String name, EntityType type,
+                               int health, float speed, int reward) {
+        ConfigurationSection mobSection = section.createSection(key);
+        mobSection.set("name", name);
+        mobSection.set("type", type.name());
+        mobSection.set("health", health);
+        mobSection.set("speed", speed);
+        mobSection.set("reward", reward);
     }
 
     public List<TowerData> getTowerTypes() {
@@ -105,14 +119,6 @@ public class ConfigManager {
         );
     }
 
-    public Vector getEndPoint() {
-        String[] coords = config.getString("path.end", "10,64,10").split(",");
-        return new Vector(
-                Double.parseDouble(coords[0]),
-                Double.parseDouble(coords[1]),
-                Double.parseDouble(coords[2])
-        );
-    }
 
     public int getStartMoney() {
         return config.getInt("game.start_money", 50);

@@ -1,20 +1,18 @@
 package org.iwich.towerdefense;
 
 import org.bukkit.plugin.java.JavaPlugin;
-import org.iwich.towerdefense.listeners.EventListener;
-import org.iwich.towerdefense.managers.CommandManager;
-import org.iwich.towerdefense.managers.ConfigManager;
-import org.iwich.towerdefense.managers.GameManager;
+import org.iwich.towerdefense.listener.EventListener;
+import org.iwich.towerdefense.manager.CommandManager;
+import org.iwich.towerdefense.manager.ConfigManager;
+import org.iwich.towerdefense.manager.GameManager;
 
 public class TowerDefense extends JavaPlugin {
-    private GameManager gameManager;
-    private ConfigManager configManager;
 
     @Override
     public void onEnable() {
         // Инициализация менеджеров
-        configManager = new ConfigManager(this);
-        gameManager = new GameManager(this, configManager);
+        ConfigManager configManager = new ConfigManager(this);
+        GameManager gameManager = new GameManager(this, configManager);
 
         // Регистрация команд и листенеров
         getCommand("tdstart").setExecutor(new CommandManager(gameManager));

@@ -1,5 +1,6 @@
-package org.iwich.towerdefense.models;
+package org.iwich.towerdefense.model;
 
+import lombok.Getter;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.LivingEntity;
@@ -13,7 +14,9 @@ import org.iwich.towerdefense.data.TowerData;
 import java.util.List;
 
 public class Tower {
+    @Getter
     private final TowerData towerType;
+    @Getter
     private final Location location;
     private long lastAttackTime;
     private final JavaPlugin plugin;
@@ -140,11 +143,4 @@ public class Tower {
                 "POISON".equalsIgnoreCase(towerType.getEffect()) ? 0.8f : 1.2f
         );
     }
-
-    public void remove() {
-        location.getBlock().setType(Material.AIR);
-    }
-
-    public TowerData getTowerType() { return towerType; }
-    public Location getLocation() { return location; }
 }

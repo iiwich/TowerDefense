@@ -1,44 +1,42 @@
-package org.iwich.towerdefense.managers;
+package org.iwich.towerdefense.manager;
 
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
+import org.iwich.towerdefense.task.GameTickTask;
+import org.iwich.towerdefense.task.MobSpawnTask;
 import org.iwich.towerdefense.data.MobData;
-import org.iwich.towerdefense.data.PlayerData;
 import org.iwich.towerdefense.data.TowerData;
-import org.iwich.towerdefense.effects.PoisonEffect;
-import org.iwich.towerdefense.models.*;
+import org.iwich.towerdefense.model.*;
 
 import java.util.*;
 
 public class GameManager {
+    @Getter
     private final JavaPlugin plugin;
     private final ConfigManager configManager;
-    private final PoisonEffect poisonEffect;
 
+    @Getter
     private boolean gameActive = false;
-    private Map<UUID, PlayerData> players = new HashMap<>();
-    private List<Mob> activeMobs = new ArrayList<>();
-    private List<Tower> towers = new ArrayList<>();
-    private List<Vector> path;
-    private Vector startPoint;
-    private Vector endPoint;
-    private Map<String, MobData> mobTypes;
+    @Getter
+    private final Map<UUID, PlayerData> players = new HashMap<>();
+    @Getter
+    private final List<Mob> activeMobs = new ArrayList<>();
+    @Getter
+    private final List<Tower> towers = new ArrayList<>();
+    @Getter
     private List<TowerData> towerTypes;
 
     private BukkitTask mobSpawnTask;
     private BukkitTask gameTickTask;
-    private int wave = 0;
 
     public GameManager(JavaPlugin plugin, ConfigManager configManager) {
         this.plugin = plugin;
         this.configManager = configManager;
-        this.poisonEffect = new PoisonEffect(plugin);
     }
 
     public void startGame(Player player) {
@@ -48,11 +46,10 @@ public class GameManager {
         }
 
         // Загрузка конфигов
-        mobTypes = configManager.getMobTypes();
+        Map<String, MobData> mobTypes = configManager.getMobTypes();
         towerTypes = configManager.getTowerTypes();
-        path = configManager.getPathPoints();
-        startPoint = configManager.getStartPoint();
-        endPoint = configManager.getEndPoint();
+        List<Vector> path = configManager.getPathPoints();
+        Vector startPoint = configManager.getStartPoint();
 
         if (path == null || path.isEmpty()) {
             player.sendMessage("Ошибка: путь для мобов не настроен!");
@@ -66,11 +63,10 @@ public class GameManager {
         ));
 
         gameActive = true;
-        wave = 0;
 
         // Запуск
-        mobSpawnTask = new MobSpawnTask().runTaskTimer(plugin, 20, 20 * 5); // Начало через 1 сек, затем каждые 5 сек
-        gameTickTask = new GameTickTask().runTaskTimer(plugin, 0, 1);
+        mobSpawnTask = new MobSpawnTask(this, mobTypes, startPoint, path).runTaskTimer(plugin, 20, 20 * 5);
+        gameTickTask = new GameTickTask(this).runTaskTimer(plugin, 0, 1);
 
         player.sendMessage("§aИгра началась! У вас §e" + getPlayerData(player.getUniqueId()).getLives() + " §aжизней.");
     }
@@ -100,16 +96,8 @@ public class GameManager {
         player.sendMessage("§cИгра окончена!");
     }
 
-    public boolean isGameActive() {
-        return gameActive;
-    }
-
     public PlayerData getPlayerData(UUID uuid) {
         return players.get(uuid);
-    }
-
-    public List<TowerData> getTowerTypes() {
-        return towerTypes;
     }
 
     public boolean placeTower(Player player, TowerData towerType, Location location) {
@@ -131,37 +119,14 @@ public class GameManager {
             player.sendMessage("§cНельзя построить здесь!");
             return false;
         }
+        // Создаем башню
+        Tower tower = new Tower(towerType, location, plugin);
 
-        try {
-            // Создаем башню
-            Tower tower = new Tower(towerType, location, plugin);
+        // Вычитаем деньги
+        playerData.setMoney(playerData.getMoney() - towerType.getCost());
+        towers.add(tower);
 
-            // Вычитаем деньги
-            playerData.setMoney(playerData.getMoney() - towerType.getCost());
-            towers.add(tower);
-
-            player.sendMessage("§aБашня §e" + towerType.getName() + " §aпостроена!");
-            return true;
-        } catch (Exception e) {
-            player.sendMessage("§cОшибка при строительстве башни!");
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    private boolean canPlaceTowerHere(Location location) {
-        // Проверяем, что блок подходит для строительства
-        if (location.getBlock().getType() != Material.AIR) {
-            return false;
-        }
-
-        // Проверяем, что башня не мешает пути мобов
-        for (Vector pathPoint : path) {
-            if (pathPoint.toLocation(location.getWorld()).distanceSquared(location) < 4) {
-                return false;
-            }
-        }
-
+        player.sendMessage("§aБашня §e" + towerType.getName() + " §aпостроена!");
         return true;
     }
 
@@ -191,109 +156,6 @@ public class GameManager {
     public void addMob(Mob mob) {
         if (mob != null && mob.getEntity() != null) {
             activeMobs.add(mob);
-        }
-    }
-
-    private class MobSpawnTask extends BukkitRunnable {
-        @Override
-        public void run() {
-            if (!gameActive) {
-                this.cancel();
-                return;
-            }
-
-            wave++;
-            for (UUID uuid : players.keySet()) {
-                Player player = Bukkit.getPlayer(uuid);
-                if (player == null || !player.isOnline()) continue;
-
-                Location spawnLoc = startPoint.toLocation(player.getWorld());
-                if (spawnLoc == null || spawnLoc.getWorld() == null) continue;
-
-                Mob mob = null;
-                if (wave % 5 == 0) {
-                    // Спавн мобов на волнах
-                    addMob(new Mob(mobTypes.get("skeleton"), player.getUniqueId(), spawnLoc, path));
-                    addMob(new Mob(mobTypes.get("zombie"), player.getUniqueId(), spawnLoc, path));
-                    addMob(new Mob(mobTypes.get("chicken"), player.getUniqueId(), spawnLoc, path));
-                } else if (wave % 3 == 0) {
-                    mob = new Mob(mobTypes.get("skeleton"), player.getUniqueId(), spawnLoc, path);
-                } else if (wave % 2 == 0) {
-                    mob = new Mob(mobTypes.get("zombie"), player.getUniqueId(), spawnLoc, path);
-                } else {
-                    mob = new Mob(mobTypes.get("chicken"), player.getUniqueId(), spawnLoc, path);
-                }
-
-                if (mob != null) {
-                    addMob(mob);
-                }
-            }
-
-            // Уведомление о волне
-            for (UUID uuid : players.keySet()) {
-                Player player = Bukkit.getPlayer(uuid);
-                if (player != null && player.isOnline()) {
-                    player.sendMessage("§bВолна §e" + wave + "§b началась!");
-                }
-            }
-        }
-    }
-
-    private class GameTickTask extends BukkitRunnable {
-        @Override
-        public void run() {
-            if (!gameActive) {
-                this.cancel();
-                return;
-            }
-
-            // Создаем копию списка для безопасного перебора
-            List<Mob> mobsToProcess = new ArrayList<>(activeMobs);
-            List<Mob> deadMobs = new ArrayList<>();
-            List<Mob> reachedEndMobs = new ArrayList<>();
-
-            // Обработка мобов
-            for (Mob mob : mobsToProcess) {
-                try {
-                    mob.update();
-
-                    if (!mob.isAlive()) {
-                        deadMobs.add(mob);
-                    } else if (mob.hasReachedEnd()) {
-                        reachedEndMobs.add(mob);
-                    }
-                } catch (Exception e) {
-                    plugin.getLogger().warning("Ошибка при обновлении моба: " + e.getMessage());
-                    deadMobs.add(mob); // Удаляем проблемного моба
-                }
-            }
-
-            // Удаляем мертвых мобов
-            for (Mob mob : deadMobs) {
-                mobKilled(mob);
-                activeMobs.remove(mob);
-                if (mob.getEntity() != null) {
-                    mob.getEntity().remove();
-                }
-            }
-
-            // Обработка мобов, дошедших до конца
-            for (Mob mob : reachedEndMobs) {
-                mobReachedEnd(mob);
-                activeMobs.remove(mob);
-                if (mob.getEntity() != null) {
-                    mob.getEntity().remove();
-                }
-            }
-
-            // Обновление башен
-            for (Tower tower : towers) {
-                try {
-                    tower.update(activeMobs); // Передаем актуальный список мобов
-                } catch (Exception e) {
-                    plugin.getLogger().warning("Ошибка при обновлении башни: " + e.getMessage());
-                }
-            }
         }
     }
 }

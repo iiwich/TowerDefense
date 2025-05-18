@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.iwich.towerdefense.managers.GameManager;
+import org.iwich.towerdefense.manager.GameManager;
 import org.iwich.towerdefense.data.TowerData;
 
 import java.util.Arrays;
@@ -19,7 +19,6 @@ public class TowerMenu {
     }
 
     public void open(Player player) {
-        try {
             // Создаем инвентарь
             Inventory inv = Bukkit.createInventory(null, 9, "Выберите башню");
 
@@ -30,10 +29,6 @@ public class TowerMenu {
             }
 
             player.openInventory(inv);
-        } catch (Exception e) {
-            player.sendMessage("§cОшибка при открытии меню башен!");
-            e.printStackTrace();
-        }
     }
 
     private ItemStack createTowerItem(TowerData towerType) {
