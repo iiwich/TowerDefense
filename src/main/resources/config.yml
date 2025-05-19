@@ -48,6 +48,18 @@ towers:
     range: 1
     cost: 40
     material: "DIAMOND_BLOCK"
+  toxic:
+    name: "Ядовитая башня"
+    damage: 0
+    attack_speed: 0
+    range: 3
+    cost: 10
+    material: "EMERALD_BLOCK"
+    effect: "POISON"
+    effect_duration: 100
+    poison_spread: true
+    poison_spread_radius: 3.0
+    poison_spread_duration: 80
 
 # Путь мобов
 path:

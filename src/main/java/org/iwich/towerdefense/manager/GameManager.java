@@ -3,6 +3,7 @@ package org.iwich.towerdefense.manager;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
@@ -19,7 +20,6 @@ public class GameManager {
     @Getter
     private final JavaPlugin plugin;
     private final ConfigManager configManager;
-
     @Getter
     private boolean gameActive = false;
     @Getter
@@ -119,6 +119,12 @@ public class GameManager {
             player.sendMessage("§cНельзя построить здесь!");
             return false;
         }
+
+        if (!canPlaceTowerHere(location)) {
+            player.sendMessage("§cЗдесь нельзя построить башню!");
+            return false;
+        }
+
         // Создаем башню
         Tower tower = new Tower(towerType, location, plugin);
 
@@ -157,5 +163,10 @@ public class GameManager {
         if (mob != null && mob.getEntity() != null) {
             activeMobs.add(mob);
         }
+    }
+
+    private boolean canPlaceTowerHere(Location location) {
+        // Проверяем, что блок подходит для строительства
+        return location.getBlock().getType() == Material.AIR;
     }
 }

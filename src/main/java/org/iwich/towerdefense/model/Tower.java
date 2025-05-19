@@ -5,13 +5,12 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import org.iwich.towerdefense.data.TowerData;
+import org.iwich.towerdefense.effect.PoisonEffect;
 
 import java.util.List;
+import java.util.Objects;
 
 public class Tower {
     @Getter
@@ -19,12 +18,10 @@ public class Tower {
     @Getter
     private final Location location;
     private long lastAttackTime;
-    private final JavaPlugin plugin;
 
     public Tower(TowerData towerType, Location location, JavaPlugin plugin) {
         this.towerType = towerType;
         this.location = location;
-        this.plugin = plugin;
         this.lastAttackTime = 0;
 
         // Установка блока
@@ -54,6 +51,10 @@ public class Tower {
         for (Mob mob : mobs) {
             if (!mob.isAlive()) continue;
 
+            if (Objects.equals(getTowerType().getEffect(), "POISON")) {
+                PoisonEffect.spreadPoison(location, towerType.getPoisonSpreadRadius(), towerType.getPoisonSpreadDuration(), 1);
+            }
+
             double distance = mob.getEntity().getLocation().distance(location);
             if (distance <= towerType.getRange() && distance < closestDistance) {
                 closestDistance = distance;
@@ -69,53 +70,11 @@ public class Tower {
         // Базовый урон
         mob.damage(towerType.getDamage());
 
-        // Применение яда (сломано)
-        if ("POISON".equalsIgnoreCase(towerType.getEffect())) {
-            applyPoisonEffect(entity);
-        }
-
         // Визуальные эффекты
         spawnAttackParticles(entity.getLocation());
         playAttackSound();
     }
 
-    private void applyPoisonEffect(LivingEntity target) {
-        // Основной эффект яда
-        target.addPotionEffect(new PotionEffect(
-                PotionEffectType.POISON,
-                towerType.getEffectDuration(),
-                1
-        ));
-
-        // Распространение яда (не работает)
-        if (towerType.hasPoisonSpread()) {
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    for (LivingEntity entity : target.getWorld().getLivingEntities()) {
-                        if (entity.equals(target)) continue;
-
-                        if (entity.getLocation().distance(target.getLocation()) <= towerType.getPoisonSpreadRadius()) {
-                            entity.addPotionEffect(new PotionEffect(
-                                    PotionEffectType.POISON,
-                                    towerType.getPoisonSpreadDuration(),
-                                    0
-                            ));
-
-                            // Эффект частиц
-                            target.getWorld().spawnParticle(
-                                    Particle.VILLAGER_ANGRY,
-                                    entity.getLocation().add(0, 1, 0),
-                                    5,
-                                    0.3, 0.3, 0.3,
-                                    0.1
-                            );
-                        }
-                    }
-                }
-            }.runTask(plugin);
-        }
-    }
 
     private void spawnAttackParticles(Location target) {
         Location start = location.clone().add(0.5, 0.5, 0.5);
